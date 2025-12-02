@@ -1,0 +1,8 @@
+
+
+
+decrypt (me)
+./aes (input) (output) (password) (E/D) (Y/N)
+
+decrypt openssl
+openssl aes-256-cbc -d -nosalt -k  password -in test.enc -out test2.jpg
