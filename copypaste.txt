@@ -1,8 +1,20 @@
+encrypt (me no salt)
+./aes test.jpg test.enc password E N
 
+encrypt (me with salt)
+./aes test.jpg test.enc password E Y
 
+encrypt (openssl with salt)
+openssl aes-256-cbc -d -k password -in test.enc -out test2.jpg
+
+encrypt (openssl no salt)
+openssl aes-256-cbc -d -nosalt -k password -in test.enc -out test2.jpg
 
 decrypt (me)
 ./aes (input) (output) (password) (E/D) (Y/N)
 
-decrypt openssl
+decrypt openssl (no salt)
 openssl aes-256-cbc -d -nosalt -k  password -in test.enc -out test2.jpg
+
+decrypt openssl (with salt)
+openssl aes-256-cbc -d -k  password -in test.enc -out test2.jpg

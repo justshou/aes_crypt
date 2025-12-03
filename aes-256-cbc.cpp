@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <openssl/evp.h>
+#include <openssl/rand.h>
 
 int encrypt(EVP_CIPHER_CTX* ctx, FILE* inFile, FILE* outFile, const unsigned char* key, const unsigned char* iv) {
     const EVP_CIPHER* cipher = EVP_aes_256_cbc();
@@ -60,6 +61,7 @@ int decrypt(EVP_CIPHER_CTX* ctx, FILE* inFile, FILE* outFile, const unsigned cha
         return -1;
     }
     std::fwrite(outputBuffer, 1, final, outFile);
+
     return 0;
 }
 
@@ -90,11 +92,6 @@ int main(int argc, char* argv[]) {
 
     FILE *inFile = fopen(argv[1], "rb");
     FILE *outFile = fopen(argv[2], "wb");
-
-    //convert with EVP_bytestokey
-    EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), nullptr, reinterpret_cast<const unsigned char*>(argv[3]), strlen(argv[3]), 1, key, iv);
-    // std::cout << "key test: " << key << std::endl;
-    // std::cout << "iv test: " << iv << std::endl;
     
     // default stuff for setup
     OpenSSL_add_all_algorithms();
@@ -105,6 +102,35 @@ int main(int argc, char* argv[]) {
         std::cerr << "Failed to create EVP_CIPHER_CTX" << std::endl;
         return 1;
     }
+
+    if(salted) {
+        if(encdec) {
+            if (RAND_bytes(salt, 8) != 1) {
+                return 1;
+            }
+            fwrite("Salted__", 1, 8, outFile);
+            fwrite(salt, 1, 8, outFile);
+        } else {
+            char header[8];
+            fread(header, 1, 8, inFile);
+            if (memcmp(header, "Salted__", 8) != 0) {
+                std::cout << "no salt found" << std::endl;
+                return 1;
+            }
+            fread(salt, 1, 8, inFile);
+        }
+    }
+
+    //convert with EVP_bytestokey (wit salt) (check if its salted)
+    if (salted) {
+        EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), salt, reinterpret_cast<const unsigned char*>(argv[3]), strlen(argv[3]), 1, key, iv);
+    } else {
+        // no salt
+        EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha256(), nullptr, reinterpret_cast<const unsigned char*>(argv[3]), strlen(argv[3]), 1, key, iv);
+    }
+    // std::cout << "key test: " << key << std::endl;
+    // std::cout << "iv test: " << iv << std::endl;
+    // std::cout << "salt" << salt << std::endl;
 
     // check what to run based on if enc/dec or salted
     if(encdec && salted) {
