@@ -2,11 +2,15 @@
 AES Crypt is an OpenSSL EVP Implementation for AES Encryption using AES-256-CBC
 
 ## Installation and Compilation
+
 Run git clone on the repo:
+
 `
 git clone https://github.com/justshou/aes_crypt.git
 `
+
 To compile, make sure to link the lcrypto library
+
 `
 g++ aes-256-cbc.cpp -o aes -lcrypto
 `
