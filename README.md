@@ -12,11 +12,19 @@ g++ aes-256-cbc.cpp -o aes -lcrypto
 `
 
 ## Usage
-`./aes (Input File) (Output File) (Key) (Encrypt/Decrypt (E/D)) (Salted? (Y/N))`
+`
+./aes (Input File) (Output File) (Key) (Encrypt/Decrypt (E/D)) (Salted? (Y/N))
+`
+
 Example encryption on file "image.jpg" with key "password" and salted.
-`./aes image.jpg image.enc password E Y`
+`
+./aes image.jpg image.enc password E Y
+`
+
 Example decryption on file "image.enc" with key "password" and salted.
-`./aes image.enc image.jpg password D Y`
+`
+./aes image.enc image.jpg password D Y
+`
 
 # IMPORTANT
 This was made by me for my operating systems class using the following resources. I am not responsible if you somehow break anything because you misused it.
